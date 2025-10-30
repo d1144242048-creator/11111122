@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDGs 性別平權小達人 證書</title>
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      background: linear-gradient(to bottom right, #fff9e6, #ffe4e1);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .certificate {
+      width: 800px;
+      background: white;
+      border: 8px solid #f7b731;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #e67e22;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin: 5px 0 20px;
+      color: #333;
+    }
+
+    .name {
+      font-size: 28px;
+      font-weight: bold;
+      color: #444;
+      border-bottom: 2px solid #ccc;
+      display: inline-block;
+      min-width: 200px;
+      padding: 5px;
+      margin: 20px 0;
+    }
+
+    .desc {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #555;
+    }
+
+    .input-area {
+      margin-top: 25px;
+    }
+
+    input[type="text"] {
+      padding: 10px 15px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 60%;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      font-size: 18px;
+      background-color: #f39c12;
+      border: none;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #e67e22;
+    }
+
+    /* 列印樣式 */
+    @media print {
+      body {
+        background: white;
+      }
+      .input-area, button {
+        display: none;
+      }
+      .certificate {
+        box-shadow: none;
+        border: 5px solid #f7b731;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate">
+    <h1>學習證書</h1>
+    <h2>SDGs 性別平權小達人</h2>
+
+    <div id="nameDisplay" class="name">________</div>
+    <div class="desc">恭喜您完成所有關卡，展現了對性別平權的理解與行動力！</div>
+
+    <div class="input-area">
+      <p>請輸入您的姓名：</p>
+      <input type="text" id="userName" placeholder="輸入姓名">
+      <br>
+      <button onclick="generateCertificate()">下載證書</button>
+    </div>
+  </div>
+
+  <script>
+    function generateCertificate() {
+      const name = document.getElementById('userName').value.trim();
+      if (!name) {
+        alert('請先輸入姓名！');
+        return;
+      }
+
+      document.getElementById('nameDisplay').textContent = name;
+      setTimeout(() => window.print(), 300);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDGs 不塑永續－淨灘</title>
+<style>
+  body {
+  margin: 0;
+  overflow: hidden;
+  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+  background-size: cover;
+  font-family: "Microsoft JhengHei", sans-serif;
+}
+
+
+  header {
+    position: fixed;
+    top: 10px;
+    left: 20px;
+    font-size: 2em;
+    font-weight: bold;
+    color: #004d40;
+    text-shadow: 1px 1px 2px white;
+  }
+
+  #scoreBoard {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #004d40;
+    background: rgba(255,255,255,0.7);
+    padding: 10px 20px;
+    border-radius: 10px;
+  }
+
+  .trash {
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .trash:hover {
+    transform: scale(1.2);
+  }
+
+  #message {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+    color: white;
+    text-shadow: 2px 2px 6px #000;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>🌊 SDGs 不塑永續－淨灘</header>
+<div id="scoreBoard">分數：<span id="score">0</span></div>
+<div id="message"></div>
+
+<script>
+ const trashTypes = [
+  { name: "保特瓶", img: "https://uxwing.com/wp-content/themes/uxwing/download/food-drinks/plastic-bottle-icon.png", points: 10 },
+  { name: "紙類",   img: "https://www.clipartmax.com/png/middle/187-1871024_free-icons-png-plastic-bottle-trash-png.png", points: 5 },
+  { name: "餐盒",   img: "https://icons.cdn.biorender.com/w550xh620/63852c9162f99c00213c0e31.png", points: 15 },
+  { name: "塑膠袋", img: "https://iconsvg.co/free-icon/08dbb44b-5893-448c-8c10-46941c5cd1d4/recycle/png", points: 8 },
+  { name: "保麗龍", img: "https://thenounproject.com/icon/plastic-bottle-waste-7806213/finished/png", points: 12 },
+  { name: "飲料杯", img: "https://icons.cdn.biorender.com/w75xh75/63852c9162f99c00213c0e36.png", points: 10 },
+  { name: "漂流垃圾", img: "https://pngset.com/download-free-png-recycle-bin-trash-can-image-transparent-png/cgjxw.png", points: 6 }
+];
+
+
+  const trashCount = 50;
+  let score = 0;
+  let picked = 0;
+
+  function random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function createTrash() {
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+    const lowerHalf = height / 2;
+
+    for (let i = 0; i < trashCount; i++) {
+      const t = trashTypes[Math.floor(Math.random() * trashTypes.length)];
+      const img = document.createElement("img");
+      img.src = t.img;
+      img.classList.add("trash");
+      img.style.width = random(40, 80) + "px";
+      img.style.left = random(0, width - 100) + "px";
+      img.style.top = random(lowerHalf, height - 100) + "px";
+      img.style.transform = `rotate(${random(0, 360)}deg)`;
+      img.dataset.points = t.points;
+
+      img.addEventListener("click", () => {
+        score += parseInt(img.dataset.points);
+        document.getElementById("score").innerText = score;
+        img.style.opacity = 0;
+        img.style.transform += " scale(0)";
+        setTimeout(() => img.remove(), 300);
+        picked++;
+        if (picked >= trashCount) showMessage("🌟 任務成功！前往下一關 🌟");
+      });
+
+      document.body.appendChild(img);
+    }
+  }
+
+  function showMessage(text) {
+    const msg = document.getElementById("message");
+    msg.textContent = text;
+    msg.style.display = "block";
+  }
+
+  createTrash();
+</script>
+
+</body>
+</html>

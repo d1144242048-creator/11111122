@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SDGs 性別平權 - 情境題</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", sans-serif;
+      background: url("3ced4185-6652-4713-9fa4-31237190e069.png") no-repeat center/cover;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      color: white;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    .flower {
+      position: absolute;
+      width: 100px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .flower:hover {
+      transform: scale(1.2);
+    }
+
+    #quizModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      width: 70%;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    #quizModal h2 {
+      margin-top: 0;
+    }
+
+    .drop-zone {
+      display: inline-block;
+      width: 45%;
+      min-height: 150px;
+      margin: 10px;
+      border: 3px dashed #ccc;
+      border-radius: 15px;
+      vertical-align: top;
+      padding: 10px;
+      background-color: #fafafa;
+    }
+
+    .draggable {
+      background: #ffe;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 8px;
+      margin: 5px;
+      cursor: grab;
+    }
+
+    #result {
+      display: none;
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background: rgba(255,255,255,0.9);
+      border-radius: 20px;
+      padding: 30px;
+      width: 300px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #ff8c00;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e67600;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>SDGs 性別平權 - 情境題</div>
+    <div id="score">答對：0 題</div>
+  </header>
+
+  <!-- 三朵花 -->
+  <img src="848185da-51f3-482a-9b79-67ecf29ef7cf.png" class="flower" id="flower1">
+  <img src="848185da-51f3-482a-9b79-67ecf29ef7cf.png" class="flower" id="flower2">
+  <img src="848185da-51f3-482a-9b79-67ecf29ef7cf.png" class="flower" id="flower3">
+
+  <!-- 題目彈窗 -->
+  <div id="quizModal">
+    <h2>請將以下語句拖入正確的分類：</h2>
+    <div id="options"></div>
+    <div>
+      <div class="drop-zone" id="equalZone">性別平等</div>
+      <div class="drop-zone" id="unequalZone">性別不平等</div>
+    </div>
+    <button id="submitAnswer">提交</button>
+  </div>
+
+  <!-- 結果區 -->
+  <div id="result">
+    <h2 id="finalText"></h2>
+    <button id="actionBtn"></button>
+  </div>
+
+  <script>
+    const flowers = document.querySelectorAll(".flower");
+    const quizModal = document.getElementById("quizModal");
+    const scoreDisplay = document.getElementById("score");
+    const resultBox = document.getElementById("result");
+    const finalText = document.getElementById("finalText");
+    const actionBtn = document.getElementById("actionBtn");
+
+    let correct = 0;
+    let totalAnswered = 0;
+
+    const quizzes = [
+      { options: ["女生也能當工程師", "女生就該幫忙煮飯"], correctEqual: ["女生也能當工程師"] },
+      { options: ["男生不可以哭", "每個人都該被尊重"], correctEqual: ["每個人都該被尊重"] },
+      { options: ["爸爸可以帶小孩", "照顧孩子是媽媽的事"], correctEqual: ["爸爸可以帶小孩"] },
+      { options: ["女生適合穿粉紅色", "顏色不分性別"], correctEqual: ["顏色不分性別"] },
+      { options: ["男老師教舞蹈很奇怪", "興趣不分性別"], correctEqual: ["興趣不分性別"] },
+      { options: ["女性也能成為領導人", "女生不適合當主管"], correctEqual: ["女性也能成為領導人"] }
+    ];
+
+    // 隨機出現花朵位置
+    flowers.forEach(f => {
+      f.style.left = Math.random() * 80 + "%";
+      f.style.top = (Math.random() * 30 + 60) + "%";
+      f.addEventListener("click", () => openQuiz());
+    });
+
+    function openQuiz() {
+      if (totalAnswered >= quizzes.length) return;
+      quizModal.style.display = "block";
+      const q = quizzes[totalAnswered];
+      const options = document.getElementById("options");
+      options.innerHTML = "";
+      q.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "draggable";
+        div.draggable = true;
+        div.textContent = opt;
+        div.ondragstart = e => e.dataTransfer.setData("text", opt);
+        options.appendChild(div);
+      });
+    }
+
+    // 拖曳邏輯
+    document.querySelectorAll(".drop-zone").forEach(zone => {
+      zone.ondragover = e => e.preventDefault();
+      zone.ondrop = e => {
+        e.preventDefault();
+        const text = e.dataTransfer.getData("text");
+        const div = document.createElement("div");
+        div.textContent = text;
+        div.className = "draggable";
+        zone.appendChild(div);
+      };
+    });
+
+    document.getElementById("submitAnswer").addEventListener("click", () => {
+      const q = quizzes[totalAnswered];
+      const equalZone = Array.from(document.getElementById("equalZone").children).map(d => d.textContent);
+      const isCorrect = q.correctEqual.every(item => equalZone.includes(item));
+      if (isCorrect) correct++;
+      totalAnswered++;
+      quizModal.style.display = "none";
+      scoreDisplay.textContent = `答對：${correct} 題`;
+
+      // 清空框內容
+      document.getElementById("equalZone").innerHTML = "性別平等";
+      document.getElementById("unequalZone").innerHTML = "性別不平等";
+
+      if (totalAnswered === quizzes.length) showResult();
+    });
+
+    function showResult() {
+      resultBox.style.display = "block";
+      let level;
+      if (correct <= 2) level = "再加油";
+      else if (correct <= 4) level = "進步中";
+      else level = "平權達人";
+      finalText.textContent = `你的等級是：${level}`;
+      if (level === "平權達人") {
+        actionBtn.textContent = "下載學習證書";
+        actionBtn.onclick = () => (window.location.href = "certificate.html");
+      } else {
+        actionBtn.textContent = "再次挑戰";
+        actionBtn.onclick = () => window.location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
